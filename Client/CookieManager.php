@@ -62,7 +62,8 @@ class HTTP_Client_CookieManager
             // be cleared on saving.
             $cookies = array();
             foreach ($this->_cookies as $cookie) {
-                if ($this->_domainMatch($url->host, $cookie['domain']) && (0 === strpos($url->path, $cookie['path']))) {
+                if ($this->_domainMatch($url->host, $cookie['domain']) && (0 === strpos($url->path, $cookie['path']))
+                    && (empty($cookie['secure']) || $url->protocol == 'https')) {
                     $cookies[$cookie['name']][strlen($cookie['path'])] = $cookie['value'];
                 }
             }

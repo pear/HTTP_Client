@@ -82,6 +82,12 @@ class HTTP_Client
     var $_propagate = array();
 
    /**
+    * Whether to keep all the responses or just the most recent one
+    * @var boolean
+    */
+    var $_isHistoryEnabled = true;
+
+   /**
     * Constructor
     * 
     * @access   public
@@ -115,6 +121,17 @@ class HTTP_Client
         $this->_maxRedirects = $value;
     }
 
+
+   /**
+    * Sets whether to keep all the responses or just the most recent one
+    *
+    * @access public
+    * @param  bool      Whether to enable history
+    */
+    function enableHistory($enable)
+    {
+        $this->_isHistoryEnabled = (bool)$enable;
+    }
 
    /**
     * Creates a HTTP_Request objects, applying all the necessary defaults
@@ -331,7 +348,7 @@ class HTTP_Client
     function _pushResponse(&$request)
     {
         $this->_cookieManager->updateCookies($request);
-        $idx   = count($this->_responses);
+        $idx   = $this->_isHistoryEnabled? count($this->_responses): 0;
         $this->_responses[$idx] = array(
             'code'    => $request->getResponseCode(),
             'headers' => $request->getResponseHeader(),

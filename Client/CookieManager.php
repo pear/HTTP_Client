@@ -109,7 +109,7 @@ class HTTP_Client_CookieManager
                     $cookie['domain'] = $url->host;
                 }
                 // use the path to the current page by default
-                if (!isset($cookie['path'])) {
+                if (empty($cookie['path'])) {
                     $cookie['path'] = DIRECTORY_SEPARATOR == dirname($url->path)? '/': dirname($url->path);
                 }
                 // check if the domains match

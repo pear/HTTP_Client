@@ -18,6 +18,14 @@
 //
 // $Id$
 
+/*
+ * Do this define in your script if you wish HTTP_Client to follow browser 
+ * quirks rather than HTTP specification (RFC2616). This means:
+ *   - do a GET request after redirect with code 301, rather than use the
+ *     same method as before redirect.
+ */
+// define('HTTP_CLIENT_QUIRK_MODE', true);
+
 require_once 'HTTP/Request.php';
 require_once 'HTTP/Client/CookieManager.php';
 
@@ -297,7 +305,7 @@ class HTTP_Client
             // we access the private properties directly, as there are no accessors for them
             switch ($request->_method) {
                 case HTTP_REQUEST_METHOD_POST: 
-                    if (302 == $code || 303 == $code) {
+                    if (302 == $code || 303 == $code || (301 == $code && defined('HTTP_CLIENT_QUIRK_MODE'))) {
                         return $this->get($url);
                     } else {
                         $postFiles = array();

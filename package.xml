@@ -24,23 +24,20 @@ events to listeners that do the response processing.
     </maintainer>
   </maintainers>
   <release>
-    <version>0.2</version>
+    <version>1.0.0beta1</version>
     <state>beta</state>
-    <date>2004-01-18</date>
+    <date>2004-04-30</date>
     <notes>
-* Depend on most recent version of HTTP_Request
-  - HTTP_Client_Listener is deprecated in favor of HTTP_Request_Listener
-  - Added possibilty to attach Listeners to created HTTP_Request objects
-  - Added support for file uploads in post() method
-* Better handling of secure cookies (thanks to Denis Malinovsky)
-* Added setMaxRedirects() method
+* REMOVED deprecated HTTP_Client_Listener
+* Applied patch from #1151, cookies with empty values are now deleted
+* Added method enableHistory() allowing to enable/disable saving of history, 
+  suggested by Matthew Feinberg
     </notes>
     <filelist>
       <dir name="/" baseinstalldir="HTTP">
         <file role="php" name="Client.php"/>
         <dir name="Client">
             <file role="php" name="CookieManager.php"/>
-            <file role="php" name="Listener.php"/>
         </dir>
         <dir name="examples">
             <file role="doc" name="link-checker.php"/>
@@ -52,6 +49,19 @@ events to listeners that do the response processing.
     </deps>
   </release>
   <changelog>
+    <release>
+      <version>0.2</version>
+      <state>beta</state>
+      <date>2004-01-18</date>
+      <notes>
+* Depend on most recent version of HTTP_Request
+  - HTTP_Client_Listener is deprecated in favor of HTTP_Request_Listener
+  - Added possibilty to attach Listeners to created HTTP_Request objects
+  - Added support for file uploads in post() method
+* Better handling of secure cookies (thanks to Denis Malinovsky)
+* Added setMaxRedirects() method
+      </notes>
+    </release>
     <release>
       <version>0.1</version>
       <state>beta</state>

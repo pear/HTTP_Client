@@ -26,11 +26,14 @@ events to listeners that do the response processing.
   <release>
     <version>0.2</version>
     <state>beta</state>
-    <date>2003-12-??</date>
+    <date>2004-01-??</date>
     <notes>
 * Depend on most recent version of HTTP_Request
   - HTTP_Client_Listener is deprecated in favor of HTTP_Request_Listener
+  - Added possibilty to attach Listeners to created HTTP_Request objects
+  - Added support for file uploads in post() method
 * Better handling of secure cookies (thanks to Denis Malinovsky)
+* Added setMaxRedirects() method
     </notes>
     <filelist>
       <dir name="/" baseinstalldir="HTTP">

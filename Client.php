@@ -76,6 +76,12 @@ class HTTP_Client
     var $_listeners = array();
 
    /**
+    * Whether the listener should be propagated to Request objects
+    * @var array
+    */
+    var $_propagate = array();
+
+   /**
     * Constructor
     * 
     * @access   public
@@ -95,6 +101,22 @@ class HTTP_Client
 
 
    /**
+    * Sets the maximum redirects that will be processed.
+    * 
+    * Setting this to 0 disables redirect processing. If not 0 and the 
+    * number of redirects in a request is bigger than this number, then an
+    * error will be raised.
+    * 
+    * @access   public
+    * @param    int     Max number of redirects to process
+    */
+    function setMaxRedirects($value)
+    {
+        $this->_maxRedirects = $value;
+    }
+
+
+   /**
     * Creates a HTTP_Request objects, applying all the necessary defaults
     *
     * @param    string   URL
@@ -110,6 +132,11 @@ class HTTP_Client
             $req->addHeader($name, $value);
         }
         $this->_cookieManager->passCookies($req);
+        foreach ($this->_propagate as $id => $propagate) {
+            if ($propagate) {
+                $req->attach($this->_listeners[$id]);
+            }
+        }
         return $req;
     }
     
@@ -159,11 +186,13 @@ class HTTP_Client
     * @param    string  URL
     * @param    mixed   Data to send
     * @param    boolean Whether the data is already urlencoded
+    * @param    array   Files to upload. Elements of the array should have the form:
+    *                   array(name, filename(s)[, content type]), see HTTP_Request::addFile()
     * @access   public
     * @return   integer HTTP response code
     * @throws   PEAR_Error
     */
-    function post($url, $data, $preEncoded = false)
+    function post($url, $data, $preEncoded = false, $files = array())
     {
         $request =& $this->_createRequest($url, HTTP_REQUEST_METHOD_POST);
         if (is_array($data)) {
@@ -172,6 +201,12 @@ class HTTP_Client
             }
         } else {
             $request->addRawPostData($data, $preEncoded);
+        }
+        foreach ($files as $fileData) {
+            $res = call_user_func_array(array(&$request, 'addFile'), $fileData);
+            if (PEAR::isError($res)) {
+                return $res;
+            }
         }
         return $this->_performRequest($request);
     }
@@ -248,7 +283,11 @@ class HTTP_Client
                     if (302 == $code || 303 == $code) {
                         return $this->get($url);
                     } else {
-                        return $this->post($url, $request->_postData, true);
+                        $postFiles = array();
+                        foreach ($request->_postFiles as $name => $data) {
+                            $postFiles[] = array($name, $data['name'], $data['type']);
+                        }
+                        return $this->post($url, $request->_postData, true, $postFiles);
                     }
                 case HTTP_REQUEST_METHOD_HEAD:
                     return (303 == $code? $this->get($url): $this->head($url));
@@ -320,15 +359,18 @@ class HTTP_Client
     * the object's events
     * 
     * @param    object   HTTP_Request_Listener instance to attach
+    * @param    boolean  Whether the listener should be attached to the 
+    *                    created HTTP_Request objects
     * @return   boolean  whether the listener was successfully attached
     * @access   public
     */
-    function attach(&$listener)
+    function attach(&$listener, $propagate = false)
     {
         if (!is_a($listener, 'HTTP_Request_Listener')) {
             return false;
         }
         $this->_listeners[$listener->getId()] =& $listener;
+        $this->_propagate[$listener->getId()] =  $propagate;
         return true;
     }
 
@@ -346,7 +388,7 @@ class HTTP_Client
             !isset($this->_listeners[$listener->getId()])) {
             return false;
         }
-        unset($this->_listeners[$listener->getId()]);
+        unset($this->_listeners[$listener->getId()], $this->_propagate[$listener->getId()]);
         return true;
     }
 

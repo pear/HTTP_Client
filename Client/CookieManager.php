@@ -115,8 +115,9 @@ class HTTP_Client_CookieManager
                 // check if the domains match
                 if ($this->_domainMatch($url->host, $cookie['domain'])) {
                     $hash = $this->_makeHash($cookie['name'], $cookie['domain'], $cookie['path']);
-                    // if the time is in the past the cookie is deleted, else added
-                    if (!isset($cookie['expires']) || (strtotime($cookie['expires']) > time())) {
+                    // if value is empty or the time is in the past the cookie is deleted, else added
+                    if (strlen($cookie['value'])
+                        && (!isset($cookie['expires']) || (strtotime($cookie['expires']) > time()))) {
                         $this->_cookies[$hash] = $cookie;
                     } elseif (isset($this->_cookies[$hash])) {
                         unset($this->_cookies[$hash]);

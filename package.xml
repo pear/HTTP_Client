@@ -24,14 +24,12 @@ events to listeners that do the response processing.
     </maintainer>
   </maintainers>
   <release>
-    <version>1.0.0beta1</version>
-    <state>beta</state>
-    <date>2004-04-30</date>
+    <version>1.0.0</version>
+    <state>stable</state>
+    <date>2004-06-11</date>
     <notes>
-* REMOVED deprecated HTTP_Client_Listener
-* Applied patch from #1151, cookies with empty values are now deleted
-* Added method enableHistory() allowing to enable/disable saving of history, 
-  suggested by Matthew Feinberg
+Since no problems were discovered with release 1.0.0beta1, the same code
+is now re-released with &quot;stable&quot; status.
     </notes>
     <filelist>
       <dir name="/" baseinstalldir="HTTP">
@@ -49,6 +47,17 @@ events to listeners that do the response processing.
     </deps>
   </release>
   <changelog>
+    <release>
+      <version>1.0.0beta1</version>
+      <state>beta</state>
+      <date>2004-04-30</date>
+      <notes>
+* REMOVED deprecated HTTP_Client_Listener
+* Applied patch from #1151, cookies with empty values are now deleted
+* Added method enableHistory() allowing to enable/disable saving of history, 
+  suggested by Matthew Feinberg
+      </notes>
+    </release>
     <release>
       <version>0.2</version>
       <state>beta</state>

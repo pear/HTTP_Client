@@ -24,11 +24,13 @@ events to listeners that do the response processing.
     </maintainer>
   </maintainers>
   <release>
-    <version>0.1</version>
+    <version>0.2</version>
     <state>beta</state>
-    <date>2003-06-05</date>
+    <date>2003-12-??</date>
     <notes>
-Initial PEAR release
+* Depend on most recent version of HTTP_Request
+  - HTTP_Client_Listener is deprecated in favor of HTTP_Request_Listener
+* Better handling of secure cookies (thanks to Denis Malinovsky)
     </notes>
     <filelist>
       <dir name="/" baseinstalldir="HTTP">
@@ -43,7 +45,17 @@ Initial PEAR release
       </dir>
     </filelist>
     <deps>
-       <dep type="pkg" rel="ge" version="1.0.2">HTTP_Request</dep>
+       <dep type="pkg" rel="ge" version="1.2">HTTP_Request</dep>
     </deps>
   </release>
+  <changelog>
+    <release>
+      <version>0.1</version>
+      <state>beta</state>
+      <date>2003-06-05</date>
+      <notes>
+Initial PEAR release
+      </notes>
+    </release>
+  </changelog>
 </package>

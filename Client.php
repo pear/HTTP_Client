@@ -319,16 +319,16 @@ class HTTP_Client
     * Adds a Listener to the list of listeners that are notified of
     * the object's events
     * 
-    * @param    object   HTTP_Client_Listener instance to attach
+    * @param    object   HTTP_Request_Listener instance to attach
     * @return   boolean  whether the listener was successfully attached
     * @access   public
     */
     function attach(&$listener)
     {
-        if (!is_a($listener, 'HTTP_Client_Listener')) {
+        if (!is_a($listener, 'HTTP_Request_Listener')) {
             return false;
         }
-        $this->_listeners[$listener->_id] =& $listener;
+        $this->_listeners[$listener->getId()] =& $listener;
         return true;
     }
 
@@ -336,17 +336,17 @@ class HTTP_Client
    /**
     * Removes a Listener from the list of listeners 
     * 
-    * @param    object   HTTP_Client_Listener instance to detach
+    * @param    object   HTTP_Request_Listener instance to detach
     * @return   boolean  whether the listener was successfully detached
     * @access   public
     */
     function detach(&$listener)
     {
-        if (!is_a($listener, 'HTTP_Client_Listener') || 
-            !isset($this->_listeners[$listener->_id])) {
+        if (!is_a($listener, 'HTTP_Request_Listener') || 
+            !isset($this->_listeners[$listener->getId()])) {
             return false;
         }
-        unset($this->_listeners[$listener->_id]);
+        unset($this->_listeners[$listener->getId()]);
         return true;
     }
 

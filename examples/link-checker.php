@@ -11,9 +11,9 @@
  */
 
 require_once 'HTTP/Client.php';
-require_once 'HTTP/Client/Listener.php';
+require_once 'HTTP/Request/Listener.php';
 
-class HTTP_Client_LinkChecker extends HTTP_Client_Listener
+class HTTP_Client_LinkChecker extends HTTP_Request_Listener
 {
    /**
     * Results of link checking ('url' => 'result')
@@ -79,7 +79,7 @@ $urlList = array(
     'http://pear.php.net/foobar.php'
 );
 
-$client  =& new HTTP_Client(array('allowRedirects' => false));
+$client  =& new HTTP_Client();
 $checker =& new HTTP_Client_LinkChecker();
 $client->attach($checker);
 

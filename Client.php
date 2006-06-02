@@ -101,10 +101,15 @@ class HTTP_Client
     * @access   public
     * @param    array   Parameters to pass to HTTP_Request's constructor
     * @param    array   Default headers to send on every request
+    * @param    object  HTTP_Client_CookieManager   Cookie manager object to use
     */
-    function HTTP_Client($defaultRequestParams = null, $defaultHeaders = null)
+    function HTTP_Client($defaultRequestParams = null, $defaultHeaders = null, $cookieManager = null)
     {
-        $this->_cookieManager =& new HTTP_Client_CookieManager();
+        if (!empty($cookieManager) && is_a($cookieManager, 'HTTP_Client_CookieManager')) {
+            $this->_cookieManager = $cookieManager;
+        } else {
+            $this->_cookieManager =& new HTTP_Client_CookieManager();
+        }
         if (isset($defaultHeaders)) {
             $this->setDefaultHeader($defaultHeaders);
         }
@@ -282,7 +287,7 @@ class HTTP_Client
     function _performRequest(&$request)
     {
         // If this is not a redirect, notify the listeners of new request
-        if (0 == $this->_redirectCount) {
+        if (0 == $this->_redirectCount && !empty($request->_url)) {
             $this->_notify('request', $request->_url->getUrl());
         }
         if (PEAR::isError($err = $request->sendRequest())) {
@@ -300,6 +305,10 @@ class HTTP_Client
                 return PEAR::raiseError("No 'Location' field on redirect");
             }
             $url = $this->_redirectUrl($request->_url, $location);
+            // Bug #5759: do not try to follow non-HTTP redirects
+            if (null === $url) {
+                return $code;
+            }
             // Notify of redirection
             $this->_notify('httpRedirect', $url);
             // we access the private properties directly, as there are no accessors for them
@@ -444,13 +453,19 @@ class HTTP_Client
     *  
     * @param    object  Net_Url object containing the request URL
     * @param    string  Value of the 'Location' response header
-    * @return   string  Absolute URL we are being redirected to
+    * @return   string|null  Absolute URL we are being redirected to, null in case of non-HTTP URL 
     * @access   private
     */
     function _redirectUrl($url, $location)
     {
-        if (preg_match('!^https?://!i', $location)) {
-            return $location;
+        // If it begins with a scheme (as defined in RFC 2396) then it is absolute URI 
+        if (preg_match('/^([a-zA-Z][a-zA-Z0-9+.-]*):/', $location, $matches)) {
+            // Bug #5759: we shouldn't try to follow non-HTTP redirects
+            if ('http' == strtolower($matches[1]) || 'https' == strtolower($matches[1])) {
+                return $location;
+            } else {
+                return null;
+            }
         } else {
             if ('/' == $location{0}) {
                 $url->path = Net_URL::resolvePath($location);
@@ -464,6 +479,18 @@ class HTTP_Client
             $url->anchor      = '';
             return $url->getUrl();
         }
+    }
+
+
+   /**
+    * Returns the cookie manager object (e.g. for storing it somewhere)
+    *
+    * @return object HTTP_Client_CookieManager
+    * @access public
+    */
+    function getCookieManager()
+    {
+        return $this->_cookieManager;
     }
 }
 ?>

@@ -57,9 +57,7 @@ class HTTP_Client_CookieManager
             $url =& $request->_url;
             // We do not check cookie's "expires" field, as we do not store deleted
             // cookies in the array and our client does not work long enough for other
-            // cookies to expire. If some kind of persistence is added to this object,
-            // then expiration should be checked upon loading and session cookies should
-            // be cleared on saving.
+            // cookies to expire.
             $cookies = array();
             foreach ($this->_cookies as $cookie) {
                 if ($this->_domainMatch($url->host, $cookie['domain']) && (0 === strpos($url->path, $cookie['path']))
@@ -178,6 +176,33 @@ class HTTP_Client_CookieManager
     function reset()
     {
         $this->_cookies = array();
+    }
+
+
+   /**
+    * Magic serialization function, removes session cookies 
+    */
+    function __sleep()
+    {
+        foreach ($this->_cookies as $hash => $cookie) {
+            if (empty($cookie['expires'])) {
+                unset($this->_cookies[$hash]);
+            }
+        }
+        return array('_cookies');
+    }
+
+
+   /**
+    * Magic unserialization function, purges expired cookies  
+    */
+    function __wakeup()
+    {
+        foreach ($this->_cookies as $hash => $cookie) {
+            if (strtotime($cookie['expires']) < time()) {
+                unset($this->_cookies[$hash]);
+            }
+        }
     }
 }
 ?>

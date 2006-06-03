@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="ISO-8859-1" ?>
-<!DOCTYPE package SYSTEM "http://pear.php.net/dtd/package-1.0">
-<package version="1.0">
+<package xmlns="http://pear.php.net/dtd/package-1.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+		 xsi:schemaLocation="http://pear.php.net/dtd/package-1.0 http://pear.php.net/dtd/package-1.0.xsd"
+		 version="1.0">
   <name>HTTP_Client</name>
   <summary>Easy way to perform multiple HTTP requests and process their results</summary>
   <description>
@@ -24,13 +26,33 @@ events to listeners that do the response processing.
     </maintainer>
   </maintainers>
   <release>
-    <version>1.0.0</version>
+    <version>1.1.0</version>
+    <date>2006-06-03</date>
+    <license>PHP License</license>
     <state>stable</state>
-    <date>2004-06-11</date>
     <notes>
-Since no problems were discovered with release 1.0.0beta1, the same code
-is now re-released with &quot;stable&quot; status.
+Fixes:
+* Fixed PHP warning if cookie path was empty (bug #1987)
+* Fixed fatal PHP error on empty URL, PEAR_Error is returned now (bug #2933)
+* Do not try to follow redirects to non-HTTP URLs (bug #5759)
+
+Feature additions:
+* It is possible to define a constant HTTP_CLIENT_QUIRK_MODE in your script,
+  if it is present then HTTP_Client will follow common browser behaviour
+  rather than RFC 2616. Currently this means: always do a GET request 
+  on a 301 redirect (request #1854).
+* HTTP_Client now analyzes the response body for &lt;meta http-equiv=&quot;Refresh&quot;&gt;
+  tags and follows the redirects defined in them (request #5734)
+* Added possibility to send extra headers with requests (request #7552)
+* It is now much easier to store permanent cookies received by HTTP_Client:
+  added magic __sleep() and __wakeup() methods to CookieManager class to aid
+  in its (un)serialization, added getCookieManager() method to HTTP_Client, 
+  added possibility to pass CookieManager object to HTTP_Client's 
+  constructor (request #7578).
     </notes>
+    <deps>
+       <dep type="pkg" rel="ge" version="1.2">HTTP_Request</dep>
+    </deps>
     <filelist>
       <dir name="/" baseinstalldir="HTTP">
         <file role="php" name="Client.php"/>
@@ -42,15 +64,23 @@ is now re-released with &quot;stable&quot; status.
         </dir>
       </dir>
     </filelist>
-    <deps>
-       <dep type="pkg" rel="ge" version="1.2">HTTP_Request</dep>
-    </deps>
   </release>
   <changelog>
     <release>
+      <version>1.0.0</version>
+      <date>2004-06-11</date>
+      <license>PHP License</license>
+      <state>stable</state>
+      <notes>
+Since no problems were discovered with release 1.0.0beta1, the same code
+is now re-released with &quot;stable&quot; status.
+      </notes>
+    </release>
+    <release>
       <version>1.0.0beta1</version>
-      <state>beta</state>
       <date>2004-04-30</date>
+      <license>PHP License</license>
+      <state>beta</state>
       <notes>
 * REMOVED deprecated HTTP_Client_Listener
 * Applied patch from #1151, cookies with empty values are now deleted
@@ -60,8 +90,9 @@ is now re-released with &quot;stable&quot; status.
     </release>
     <release>
       <version>0.2</version>
-      <state>beta</state>
       <date>2004-01-18</date>
+      <license>PHP License</license>
+      <state>beta</state>
       <notes>
 * Depend on most recent version of HTTP_Request
   - HTTP_Client_Listener is deprecated in favor of HTTP_Request_Listener
@@ -73,8 +104,9 @@ is now re-released with &quot;stable&quot; status.
     </release>
     <release>
       <version>0.1</version>
-      <state>beta</state>
       <date>2003-06-05</date>
+      <license>PHP License</license>
+      <state>beta</state>
       <notes>
 Initial PEAR release
       </notes>

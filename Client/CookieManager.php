@@ -60,15 +60,35 @@ class HTTP_Client_CookieManager
     */
     var $_cookies = array();
 
+   /**
+    * Whether session cookies should be serialized on object serialization
+    * @var      boolean
+    * @access   private
+    */
+    var $_serializeSessionCookies = false;
+   
 
    /**
     * Constructor
     * 
-    * @access public
+    * @param    boolean     Whether session cookies should be serialized
+    * @access   public
+    * @see      serializeSessionCookies()
     */
-    function HTTP_Client_CookieManager()
+    function HTTP_Client_CookieManager($serializeSession = false)
     {
-        // abstract
+        $this->serializeSessionCookies($serializeSession);
+    }
+
+   /**
+    * Sets whether session cookies should be serialized when serializing object
+    *
+    * @param    boolean
+    * @access   public
+    */
+    function serializeSessionCookies($serialize)
+    {
+        $this->_serializeSessionCookies = (bool)$serialize;
     }
 
 
@@ -207,16 +227,20 @@ class HTTP_Client_CookieManager
 
 
    /**
-    * Magic serialization function, removes session cookies 
+    * Magic serialization function
+    *
+    * Removes session cookies if $_serializeSessionCookies is false (default)
     */
     function __sleep()
     {
-        foreach ($this->_cookies as $hash => $cookie) {
-            if (empty($cookie['expires'])) {
-                unset($this->_cookies[$hash]);
+        if (!$this->_serializeSessionCookies) {
+            foreach ($this->_cookies as $hash => $cookie) {
+                if (empty($cookie['expires'])) {
+                    unset($this->_cookies[$hash]);
+                }
             }
         }
-        return array('_cookies');
+        return array('_cookies', '_serializeSessionCookies');
     }
 
 
@@ -226,7 +250,7 @@ class HTTP_Client_CookieManager
     function __wakeup()
     {
         foreach ($this->_cookies as $hash => $cookie) {
-            if (strtotime($cookie['expires']) < time()) {
+            if (!empty($cookie['expires']) && strtotime($cookie['expires']) < time()) {
                 unset($this->_cookies[$hash]);
             }
         }

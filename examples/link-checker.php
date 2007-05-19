@@ -1,18 +1,30 @@
 <?php
 /**
- * An example implementation of HTTP_Client_Listener: a simple
- * link checker.
- * 
- * @package HTTP_Client
- * @author  Alexey Borzov <avb@php.net>
- * @version $Revision$
- * 
- * $Id$
+ * Usage example for HTTP_Client: a simple link checker.
+ *
+ * @category    HTTP
+ * @package     HTTP_Client
+ * @author      Alexey Borzov <avb@php.net>
+ * @version     CVS: $Id$
+ * @ignore
  */
 
+/**
+ * A simple HTTP client class.
+ */ 
 require_once 'HTTP/Client.php';
+/**
+ * Listener for HTTP_Request and HTTP_Client objects
+ */
 require_once 'HTTP/Request/Listener.php';
 
+/**
+ * A Listener-based link checker class
+ *
+ * @category    HTTP
+ * @package     HTTP_Client
+ * @ignore
+ */ 
 class HTTP_Client_LinkChecker extends HTTP_Request_Listener
 {
    /**

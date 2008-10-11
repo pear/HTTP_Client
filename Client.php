@@ -8,7 +8,7 @@
  *
  * LICENSE:
  * 
- * Copyright (c) 2003-2007, Alexey Borzov <avb@php.net>
+ * Copyright (c) 2003-2008, Alexey Borzov <avb@php.net>
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -66,6 +66,32 @@ require_once 'HTTP/Client/CookieManager.php';
  * The class wraps around HTTP_Request providing a higher-level
  * API for performing multiple HTTP requests
  *
+ * Note that the class implements all the methods defined by the Iterator 
+ * interface for going over the received responses. Being PHP4-compatible it is 
+ * not declared with 'implements Iterator', though. Therefore if you are 
+ * running PHP5 and want to use HTTP_Client in 'foreach' context you should do
+ * the following:
+ * <code>
+ * class PHP5_HTTP_Client extends HTTP_Client implements Iterator {}
+ * 
+ * $client = new PHP5_HTTP_Client();
+ * 
+ * // ... perform requests ...
+ * 
+ * foreach ($client as $url => $response) {
+ *     // do something
+ * } 
+ * </code>
+ *
+ * If you are running PHP4 you'll have to call the methods manually:
+ * <code>
+ * for ($client->rewind(); $client->valid(); $client->next()) {
+ *     $url = $client->key();
+ *     $response = $client->current();
+ *     // do something
+ * }
+ * </code>
+ * 
  * @category    HTTP
  * @package     HTTP_Client
  * @author      Alexey Borzov <avb@php.net>
@@ -129,6 +155,12 @@ class HTTP_Client
     * @var boolean
     */
     var $_isHistoryEnabled = true;
+
+   /**
+    * Index for iteration over the responses
+    * @var integer
+    */
+    var $_idx = 0;
    /**#@-*/
 
    /**
@@ -436,6 +468,8 @@ class HTTP_Client
 
    /**
     * Returns the most recent HTTP response
+    *
+    * To access previous responses use iteration methods
     * 
     * @access public
     * @return array
@@ -457,6 +491,7 @@ class HTTP_Client
         $this->_cookieManager->updateCookies($request);
         $idx   = $this->_isHistoryEnabled? count($this->_responses): 0;
         $this->_responses[$idx] = array(
+            'url'     => $request->getUrl(),
             'code'    => $request->getResponseCode(),
             'headers' => $request->getResponseHeader(),
             'body'    => $request->getResponseBody()
@@ -475,6 +510,7 @@ class HTTP_Client
         $this->_responses            = array();
         $this->_defaultHeaders       = array();
         $this->_defaultRequestParams = array();
+        $this->_idx                  = 0;
     }
 
 
@@ -618,6 +654,66 @@ class HTTP_Client
         $previousUrl = $request->getUrl();
         $redirectUrl = $this->_redirectUrl($request->_url, html_entity_decode($url));
         return (null === $redirectUrl || $redirectUrl == $previousUrl)? null: $redirectUrl; 
+    }
+
+
+   /**
+    * Returns the current element (HTTP response)
+    *
+    * @access   public
+    * @return   array   
+    */ 
+    function current()
+    {
+        $response = $this->_responses[$this->_idx];
+        unset($response['url']);
+        return $response;
+    }
+
+
+   /**
+    * Returns the key of the current element
+    *
+    * @access   public
+    * @return   string  URL producing the response
+    */
+    function key()
+    {
+        return $this->_responses[$this->_idx]['url'];
+    }
+
+
+   /**
+    * Moves forward to next element
+    *
+    * @access   public
+    */ 
+    function next()
+    {
+        $this->_idx++;
+    }
+
+
+   /**
+    * Rewinds to the first element (response)
+    *
+    * @access   public
+    */
+    function rewind()
+    {
+        $this->_idx = 0;
+    }
+
+
+   /**
+    * Checks if there is a current element after call to rewind() or next()
+    *
+    * @access   public
+    * @return   bool    
+    */ 
+    function valid()
+    {
+        return $this->_idx < count($this->_responses);
     }
 }
 ?>

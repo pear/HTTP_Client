@@ -8,7 +8,7 @@
  *
  * LICENSE:
  * 
- * Copyright (c) 2003-2007, Alexey Borzov <avb@php.net>
+ * Copyright (c) 2003-2008, Alexey Borzov <avb@php.net>
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without

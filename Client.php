@@ -398,15 +398,20 @@ class HTTP_Client
             $this->_notify('httpRedirect', $redirectUrl);
             // we access the private properties directly, as there are no accessors for them
             switch ($request->_method) {
-                case HTTP_REQUEST_METHOD_POST: 
-                    if (302 == $code || 303 == $code || (301 == $code && defined('HTTP_CLIENT_QUIRK_MODE'))) {
+                case HTTP_REQUEST_METHOD_POST:
+                    // Bug #13487: if doing a redirect via <meta>, use GET 
+                    if (302 == $code || 303 == $code || $code < 300 ||
+                        (301 == $code && defined('HTTP_CLIENT_QUIRK_MODE'))) 
+                    {
                         return $this->get($redirectUrl);
-                    } else {
+                    } elseif (!empty($request->_postData) || !empty($request->_postFiles)) {
                         $postFiles = array();
                         foreach ($request->_postFiles as $name => $data) {
                             $postFiles[] = array($name, $data['name'], $data['type']);
                         }
                         return $this->post($redirectUrl, $request->_postData, true, $postFiles);
+                    } else {
+                        return $this->post($redirectUrl, $request->_body, true);
                     }
                 case HTTP_REQUEST_METHOD_HEAD:
                     return (303 == $code? $this->get($redirectUrl): $this->head($redirectUrl));
@@ -603,13 +608,15 @@ class HTTP_Client
         }
         $parts = explode(';', ('\'' == substr($urlMatches[1], 0, 1) || '"' == substr($urlMatches[1], 0, 1))? 
                                substr($urlMatches[1], 1, -1): $urlMatches[1]);
-        if (empty($parts[1]) || !preg_match('/url\\s*=\\s*(\\S+)/is', $parts[1], $urlMatches)) {
+        if (empty($parts[1]) || !preg_match('/url\\s*=\\s*("[^"]+"|\'[^\']+\'|\\S+)/is', $parts[1], $urlMatches)) {
              return null;
         }
+        $url = ('\'' == substr($urlMatches[1], 0, 1) || '"' == substr($urlMatches[1], 0, 1))?
+               substr($urlMatches[1], 1, -1): $urlMatches[1];
         // We do finally have an url... Now check that it's:
         // a) HTTP, b) not to the same page
         $previousUrl = $request->getUrl();
-        $redirectUrl = $this->_redirectUrl($request->_url, html_entity_decode($urlMatches[1]));
+        $redirectUrl = $this->_redirectUrl($request->_url, html_entity_decode($url));
         return (null === $redirectUrl || $redirectUrl == $previousUrl)? null: $redirectUrl; 
     }
 }

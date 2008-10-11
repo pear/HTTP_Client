@@ -23,10 +23,10 @@ events to listeners that do the response processing.
   <email>avb@php.net</email>
   <active>yes</active>
  </lead>
- <date>2007-05-19</date>
+ <date>2008-11-01</date>
  <version>
-  <release>1.1.1</release>
-  <api>1.1.1</api>
+  <release>1.2.0</release>
+  <api>1.2.0</api>
  </version>
  <stability>
   <release>stable</release>
@@ -34,12 +34,8 @@ events to listeners that do the response processing.
  </stability>
  <license uri="http://opensource.org/licenses/bsd-license.php">BSD</license>
  <notes>
-* Switched to package.xml 2.0
-* Switched to BSD license
-* Proper header comment blocks and various phpdoc fixes
-* Added a switch controlling serialization of session cookies to CookieManager
-  class, use serializeSessionCookies(true) to enable their serialization. The
-  default behaviour is still to delete them (request #8778, also #9142)
+* Proper dependencies' versions
+* Implemented put() and delete() methods (request #2073 and numerous others)
  </notes>
  <contents>
   <dir name="/" baseinstalldir="HTTP">
@@ -59,20 +55,40 @@ events to listeners that do the response processing.
  <dependencies>
   <required>
    <php>
-    <min>4.0.0</min>
+    <min>4.3.0</min>
    </php>
    <pearinstaller>
-    <min>1.4.0b1</min>
+    <min>1.4.3</min>
    </pearinstaller>
    <package>
     <name>HTTP_Request</name>
     <channel>pear.php.net</channel>
-    <min>1.2</min>
+    <min>1.4.0</min>
    </package>
   </required>
  </dependencies>
  <phprelease />
  <changelog>
+  <release>
+   <version>
+    <release>1.1.1</release>
+    <api>1.1.1</api>
+   </version>
+   <stability>
+    <release>stable</release>
+    <api>stable</api>
+   </stability>
+   <date>2007-05-19</date>
+   <license uri="http://opensource.org/licenses/bsd-license.php">BSD</license>
+   <notes>
+* Switched to package.xml 2.0
+* Switched to BSD license
+* Proper header comment blocks and various phpdoc fixes
+* Added a switch controlling serialization of session cookies to CookieManager
+  class, use serializeSessionCookies(true) to enable their serialization. The
+  default behaviour is still to delete them (request #8778, also #9142)
+   </notes>
+  </release>
   <release>
    <version>
     <release>1.1.0</release>

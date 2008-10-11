@@ -286,6 +286,39 @@ class HTTP_Client
 
 
    /**
+    * Sends a 'PUT' HTTP request
+    *
+    * @param    string  URL
+    * @param    string  Request body
+    * @param    array   Extra headers to send
+    * @access   public
+    * @return   integer HTTP response code
+    * @throws   PEAR_Error
+    */
+    function put($url, $body = '', $headers = array())
+    {
+        $request =& $this->_createRequest($url, HTTP_REQUEST_METHOD_PUT, $headers);
+        $request->setBody($body);
+        return $this->_performRequest($request);
+    }
+
+
+   /**
+    * Sends a 'DELETE' HTTP request
+    *
+    * @param    string  URL
+    * @param    array   Extra headers to send
+    * @access   public
+    * @return   integer HTTP response code
+    * @throws   PEAR_Error
+    */
+    function delete($url, $headers = array())
+    {
+        $request =& $this->_createRequest($url, HTTP_REQUEST_METHOD_DELETE, $headers);
+        return $this->_performRequest($request);
+    } 
+
+   /**
     * Sets default header(s) for HTTP requests
     *
     * @param    mixed   header name or array ('header name' => 'header value')
@@ -330,8 +363,8 @@ class HTTP_Client
     function _performRequest(&$request)
     {
         // If this is not a redirect, notify the listeners of new request
-        if (0 == $this->_redirectCount && !empty($request->_url)) {
-            $this->_notify('request', $request->_url->getUrl());
+        if (0 == $this->_redirectCount && '' != $request->getUrl()) {
+            $this->_notify('request', $request->getUrl());
         }
         if (PEAR::isError($err = $request->sendRequest())) {
             $this->_redirectCount = 0;
@@ -386,7 +419,7 @@ class HTTP_Client
             $this->_redirectCount = 0;
             if (400 >= $code) {
                 $this->_notify('httpSuccess');
-                $this->setDefaultHeader('Referer', $request->_url->getUrl());
+                $this->setDefaultHeader('Referer', $request->getUrl());
                 // some result processing should go here
             } else {
                 $this->_notify('httpError');
@@ -519,7 +552,7 @@ class HTTP_Client
                 return null;
             }
         } else {
-            if ('/' == $location{0}) {
+            if ('/' == $location[0]) {
                 $url->path = Net_URL::resolvePath($location);
             } elseif('/' == substr($url->path, -1)) {
                 $url->path = Net_URL::resolvePath($url->path . $location);
@@ -575,7 +608,7 @@ class HTTP_Client
         }
         // We do finally have an url... Now check that it's:
         // a) HTTP, b) not to the same page
-        $previousUrl = $request->_url->getUrl();
+        $previousUrl = $request->getUrl();
         $redirectUrl = $this->_redirectUrl($request->_url, html_entity_decode($urlMatches[1]));
         return (null === $redirectUrl || $redirectUrl == $previousUrl)? null: $redirectUrl; 
     }

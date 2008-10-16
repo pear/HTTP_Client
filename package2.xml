@@ -23,7 +23,7 @@ events to listeners that do the response processing.
   <email>avb@php.net</email>
   <active>yes</active>
  </lead>
- <date>2008-11-01</date>
+ <date>2008-10-16</date>
  <version>
   <release>1.2.0</release>
   <api>1.2.0</api>
@@ -36,6 +36,9 @@ events to listeners that do the response processing.
  <notes>
 * Proper dependencies' versions
 * Implemented put() and delete() methods (request #2073 and numerous others)
+* Implemented methods to iterate over the responses (see request #12322)
+* Perform GET request when redirecting via &lt;meta&gt; tag after POST (bug #13487)
+* Handle the case of quoted redirect url in &lt;meta&gt; tag (bug #13903)
  </notes>
  <contents>
   <dir name="/" baseinstalldir="HTTP">

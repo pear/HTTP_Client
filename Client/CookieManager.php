@@ -205,13 +205,21 @@ class HTTP_Client_CookieManager
     */
     function _domainMatch($requestHost, $cookieDomain)
     {
-        if ('.' != $cookieDomain{0}) {
-            return $requestHost == $cookieDomain;
-        } elseif (substr_count($cookieDomain, '.') < 2) {
-            return false;
-        } else {
-            return substr('.'. $requestHost, - strlen($cookieDomain)) == $cookieDomain;
+        if ($requestHost == $cookieDomain) {
+            return true;
         }
+        // IP address, we require exact match
+        if (preg_match('/^(?:\d{1,3}\.){3}\d{1,3}$/', $requestHost)) {
+            return false;
+        }
+        if ('.' != $cookieDomain[0]) {
+            $cookieDomain = '.' . $cookieDomain;
+        }
+        // prevents setting cookies for '.com'
+        if (substr_count($cookieDomain, '.') < 2) {
+            return false;
+        }
+        return substr('.' . $requestHost, -strlen($cookieDomain)) == $cookieDomain;
     }
 
 

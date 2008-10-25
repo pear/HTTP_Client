@@ -23,9 +23,9 @@ events to listeners that do the response processing.
   <email>avb@php.net</email>
   <active>yes</active>
  </lead>
- <date>2008-10-16</date>
+ <date>2008-10-25</date>
  <version>
-  <release>1.2.0</release>
+  <release>1.2.1</release>
   <api>1.2.0</api>
  </version>
  <stability>
@@ -34,11 +34,8 @@ events to listeners that do the response processing.
  </stability>
  <license uri="http://opensource.org/licenses/bsd-license.php">BSD</license>
  <notes>
-* Proper dependencies' versions
-* Implemented put() and delete() methods (request #2073 and numerous others)
-* Implemented methods to iterate over the responses (see request #12322)
-* Perform GET request when redirecting via &lt;meta&gt; tag after POST (bug #13487)
-* Handle the case of quoted redirect url in &lt;meta&gt; tag (bug #13903)
+Cookies set by sub.example.com for example.com were incorrectly rejected. 
+Thanks to Dylan Doxey (hyperion at doxey dot org) for report and initial patch.
  </notes>
  <contents>
   <dir name="/" baseinstalldir="HTTP">
@@ -72,6 +69,25 @@ events to listeners that do the response processing.
  </dependencies>
  <phprelease />
  <changelog>
+  <release>
+   <version>
+    <release>1.2.0</release>
+    <api>1.2.0</api>
+   </version>
+   <stability>
+    <release>stable</release>
+    <api>stable</api>
+   </stability>
+   <date>2008-10-16</date>
+   <license uri="http://opensource.org/licenses/bsd-license.php">BSD</license>
+   <notes>
+* Proper dependencies' versions
+* Implemented put() and delete() methods (request #2073 and numerous others)
+* Implemented methods to iterate over the responses (see request #12322)
+* Perform GET request when redirecting via &lt;meta&gt; tag after POST (bug #13487)
+* Handle the case of quoted redirect url in &lt;meta&gt; tag (bug #13903)
+   </notes>
+  </release>
   <release>
    <version>
     <release>1.1.1</release>
